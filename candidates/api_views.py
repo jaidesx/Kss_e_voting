@@ -1,11 +1,16 @@
-from rest_framework import generics
-from .models import Candidate
-from .serializers import CandidateSerializer
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 
-class CandidateListAPIView(generics.ListAPIView):
-    queryset = Candidate.objects.all()
-    serializer_class = CandidateSerializer
+from candidates.models import Candidate
+from .serializers import (
+    CandidateSerializer
+)
 
-class CandidateDetailAPIView(generics.RetrieveAPIView):
-    queryset = Candidate.objects.all()
+
+class CandidateViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all candidates
+    """
+    queryset = Candidate.objects.all().select_related('post')
     serializer_class = CandidateSerializer
+    permission_classes = [AllowAny]

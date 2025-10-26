@@ -1,11 +1,15 @@
-from rest_framework import generics
-from .models import Post
-from .serializers import PostSerializer
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 
-class PostListAPIView(generics.ListAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+from posts.models import Post
+from .serializers import PostWithCandidatesSerializer
 
-class PostDetailAPIView(generics.RetrieveAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+
+class PostViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all positions with candidate count
+    """
+    queryset = Post.objects.all().prefetch_related('candidates')
+    serializer_class = PostWithCandidatesSerializer
+    permission_classes = [AllowAny]
+

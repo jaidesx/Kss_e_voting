@@ -1,0 +1,20 @@
+<!-- templates/admin/voters/voter_changelist.html -->
+
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  
+  <li>
+    <a href="import-excel/" class="addlink">
+      Import from Excel
+    </a>
+  </li>
+  
+  <li>
+    <a href="download-template/" class="viewlink">
+      Download Template
+    </a>
+  </li>
+{% endblock %}

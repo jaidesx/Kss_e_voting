@@ -1,0 +1,206 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+<style>
+  .import-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .import-instructions {
+    background-color: #e7f3fe;
+    border-left: 4px solid #2196F3;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .import-instructions h3 {
+    margin-top: 0;
+    color: #1976D2;
+  }
+  
+  .import-instructions ul {
+    margin-left: 20px;
+  }
+  
+  .form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .form-row {
+    margin-bottom: 20px;
+  }
+  
+  .form-row label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .form-row input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .form-row input[type="checkbox"] {
+    margin-right: 5px;
+  }
+  
+  .helptext {
+    display: block;
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .submit-row {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .button {
+    background-color: #417690;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .button:hover {
+    background-color: #2e5266;
+  }
+  
+  .button.cancel {
+    background-color: #ba2121;
+    margin-left: 10px;
+  }
+  
+  .button.cancel:hover {
+    background-color: #a41515;
+  }
+  
+  .excel-format {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .excel-format h4 {
+    margin-top: 0;
+    color: #856404;
+  }
+  
+  .excel-format table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .excel-format th,
+  .excel-format td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .excel-format th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="import-container">
+  <h1>{{ title }}</h1>
+  
+  <div class="import-instructions">
+    <h3>📋 Instructions</h3>
+    <ul>
+      <li>Download the Excel template by clicking the "Download Template" button</li>
+      <li>Fill in the voter information (voter_no, name, house)</li>
+      <li>Upload the completed Excel file using the form below</li>
+      <li>The system will validate and import up to 3000 voters at once</li>
+      <li>Duplicate voter numbers will be skipped unless "Update existing voters" is checked</li>
+    </ul>
+  </div>
+  
+  <div class="excel-format">
+    <h4>📊 Required Excel Format</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>voter_no</th>
+          <th>name</th>
+          <th>house</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>V001</td>
+          <td>John Doe</td>
+          <td>Red House</td>
+        </tr>
+        <tr>
+          <td>V002</td>
+          <td>Jane Smith</td>
+          <td>Blue House</td>
+        </tr>
+        <tr>
+          <td>V003</td>
+          <td>Mary Johnson</td>
+          <td>Green House</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 10px; color: #856404;">
+      <strong>Note:</strong> The first row must contain the column headers exactly as shown above.
+    </p>
+  </div>
+  
+  <div class="form-container">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      {% if form.errors %}
+        <div class="errornote">
+          <strong>Please correct the errors below:</strong>
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+      
+      {% for field in form %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="errorlist">
+              {{ field.errors }}
+            </div>
+          {% endif %}
+          {% if field.help_text %}
+            <span class="helptext">{{ field.help_text }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+      
+      <div class="submit-row">
+        <button type="submit" class="button">Import Voters</button>
+        <a href="../" class="button cancel">Cancel</a>
+        <a href="../download-template/" class="button" style="background-color: #28a745; float: right;">Download Template</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

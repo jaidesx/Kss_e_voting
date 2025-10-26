@@ -1,53 +1,118 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Count
-from django.db import IntegrityError
-from candidates.models import Candidate
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 from posts.models import Post
-from voting.models import Vote, Voter
-from .serializers import ElectionStatsSerializer, CandidateResultSerializer, VoteSerializer
+from voting.models import Voter, Vote
+from .serializers import LiveResultsSerializer,VoteSerializer, BulkVoteSerializer
 
-class VoteAPIView(APIView):
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def live_results(request):
     """
-    Handle voting operations
+    Get live voting results grouped by position
     """
-    def post(self, request):
-        serializer = VoteSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                vote = serializer.save()
-                return Response(VoteSerializer(vote).data, status=status.HTTP_201_CREATED)
-            except IntegrityError:
-                return Response({"error": "You have already voted for this post"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class ElectionStatsAPIView(APIView):
-    """
-    Returns JSON with total voters, total votes, and candidate results
-    """
-    def get(self, request):
-        total_voters = Voter.objects.count()
-        total_votes = Vote.objects.count()
-
-        candidates = Candidate.objects.annotate(vote_count=Count('vote'))
-        results = []
-
-        for candidate in candidates:
-            vote_count = candidate.vote_count
-            percentage = (vote_count / total_votes * 100) if total_votes else 0
-            results.append({
-                "name": candidate.name,
-                "post": candidate.post.title,
-                "votes": vote_count,
-                "percentage": round(percentage, 2)
-            })
-
-        data = {
-            "total_voters": total_voters,
-            "total_votes": total_votes,
-            "results": results
+    posts = Post.objects.all().prefetch_related('candidates')
+    serializer = LiveResultsSerializer(posts, many=True)
+    
+    total_voters = Voter.objects.count()
+    voted_count = Voter.objects.filter(has_voted=True).count()
+    
+    return Response({
+        'success': True,
+        'data': {
+            'positions': serializer.data,
+            'statistics': {
+                'total_voters': total_voters,
+                'voted_count': voted_count,
+                'voter_turnout_percentage': round((voted_count / total_voters * 100), 2) if total_voters > 0 else 0
+            }
         }
+    }, status=status.HTTP_200_OK)
 
-        serializer = ElectionStatsSerializer(data)
-        return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cast_vote(request):
+    """
+    Cast a vote for a candidate
+    Voter must be authenticated via JWT
+    """
+    voter = request.user
+    
+    serializer = VoteSerializer(data=request.data, context={'request': request})
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            'success': True,
+            'message': 'Vote cast successfully'
+        }, status=status.HTTP_201_CREATED)
+    
+    return Response({
+        'success': False,
+        'message': 'Failed to cast vote',
+        'errors': serializer.errors
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def voter_status(request):
+    """
+    Get current voter's voting status
+    """
+    voter = request.user
+    voted_positions = Vote.objects.filter(voter=voter).values_list('post__title', flat=True)
+    
+    return Response({
+        'success': True,
+        'data': {
+            'voter': {
+                'id': voter.id,
+                'voter_no': voter.voter_no,
+                'name': voter.name,
+                'house': voter.house,
+                'has_voted': voter.has_voted
+            },
+            'voted_positions': list(voted_positions),
+            'votes_cast': Vote.objects.filter(voter=voter).count()
+        }
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cast_bulk_votes(request):
+    """
+    Cast votes for multiple positions at once
+    Voter must be authenticated via JWT
+    
+    Expected request body format:
+    {
+        "votes": [
+            {"post": 1, "candidate": 3},
+            {"post": 2, "candidate": 5},
+            {"post": 3, "candidate": 7}
+        ]
+    }
+    """
+    voter = request.user
+    
+    serializer = BulkVoteSerializer(data=request.data, context={'request': request})
+    
+    if serializer.is_valid():
+        created_votes = serializer.save()
+        return Response({
+            'success': True,
+            'message': f'{len(created_votes)} votes cast successfully',
+            'votes_count': len(created_votes)
+        }, status=status.HTTP_201_CREATED)
+    
+    return Response({
+        'success': False,
+        'message': 'Failed to cast votes',
+        'errors': serializer.errors
+    }, status=status.HTTP_400_BAD_REQUEST)
+
