@@ -1,204 +1,411 @@
 {% extends "admin/base_site.html" %}
 {% load static %}
 
-{% block extrahead %}
+{% block extrastyle %}
+{{ block.super }}
 <style>
+  #content {
+    padding: 20px;
+  }
+
   .import-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
   }
   
-  .import-instructions {
-    background-color: #e7f3fe;
-    border-left: 4px solid #2196F3;
-    padding: 15px;
-    margin-bottom: 20px;
-  }
-  
-  .import-instructions h3 {
-    margin-top: 0;
-    color: #1976D2;
-  }
-  
-  .import-instructions ul {
-    margin-left: 20px;
-  }
-  
-  .form-container {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .form-row {
-    margin-bottom: 20px;
-  }
-  
-  .form-row label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .form-row input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .form-row input[type="checkbox"] {
-    margin-right: 5px;
-  }
-  
-  .helptext {
-    display: block;
-    color: #666;
-    font-size: 12px;
-    margin-top: 5px;
-  }
-  
-  .submit-row {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .button {
-    background-color: #417690;
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  .page-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
     font-size: 14px;
   }
   
-  .button:hover {
-    background-color: #2e5266;
-  }
-  
-  .button.cancel {
-    background-color: #ba2121;
-    margin-left: 10px;
-  }
-  
-  .button.cancel:hover {
-    background-color: #a41515;
-  }
-  
-  .excel-format {
-    background-color: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 15px;
+  .info-card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border-left: 4px solid #2196F3;
+  }
+
+  .info-card.warning {
+    border-left-color: #ff9800;
+    background: #fff8e1;
   }
   
-  .excel-format h4 {
-    margin-top: 0;
-    color: #856404;
+  .info-card h3 {
+    margin: 0 0 16px 0;
+    color: #1976D2;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .info-card.warning h3 {
+    color: #f57c00;
   }
   
-  .excel-format table {
+  .info-card ul {
+    margin: 0;
+    padding-left: 24px;
+    line-height: 1.8;
+  }
+
+  .info-card ul li {
+    margin-bottom: 8px;
+    color: #424242;
+  }
+  
+  .format-table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+
+  .format-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
   }
   
-  .excel-format th,
-  .excel-format td {
-    border: 1px solid #ddd;
-    padding: 8px;
+  .format-table thead {
+    background: #f5f5f5;
+  }
+
+  .format-table th {
+    padding: 12px 16px;
     text-align: left;
+    font-weight: 600;
+    color: #424242;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
-  .excel-format th {
-    background-color: #f8f9fa;
-    font-weight: bold;
+  .format-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #616161;
+  }
+
+  .format-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .format-table tbody tr:hover {
+    background: #fafafa;
+  }
+  
+  .format-note {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff3cd;
+    border-radius: 4px;
+    color: #856404;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .format-note strong {
+    color: #664d03;
+  }
+  
+  .form-card {
+    background: white;
+    border-radius: 8px;
+    padding: 28px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #424242;
+    font-size: 14px;
+  }
+  
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+  }
+  
+  .form-group input[type="file"]:hover {
+    border-color: #667eea;
+    background: #f5f7ff;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .checkbox-group label {
+    margin: 0 !important;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .help-text {
+    display: block;
+    color: #757575;
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  
+  .error-list {
+    background: #ffebee;
+    border-left: 4px solid #f44336;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  .error-list strong {
+    color: #c62828;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .error-list ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #d32f2f;
+  }
+  
+  .button-row {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  
+  .btn-success {
+    background: #28a745;
+    color: white;
+    margin-left: auto;
+  }
+
+  .btn-success:hover {
+    background: #218838;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 20px;
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+    }
+
+    .info-card, .form-card {
+      padding: 16px;
+    }
+
+    .button-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn {
+      justify-content: center;
+    }
+
+    .btn-success {
+      margin-left: 0;
+      order: -1;
+    }
   }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="import-container">
-  <h1>{{ title }}</h1>
+  <div class="page-header">
+    <h1>📥 Import Voters</h1>
+    <p>Upload an Excel or CSV file to import voter data into the system</p>
+  </div>
   
-  <div class="import-instructions">
-    <h3>📋 Instructions</h3>
+  <div class="info-card">
+    <h3>Instructions</h3>
     <ul>
-      <li>Download the Excel template by clicking the "Download Template" button</li>
-      <li>Fill in the voter information (voter_no, name, house)</li>
-      <li>Upload the completed Excel file using the form below</li>
-      <li>The system will validate and import up to 3000 voters at once</li>
-      <li>Duplicate voter numbers will be skipped unless "Update existing voters" is checked</li>
+      <li>Download the Excel template by clicking the "Download Template" button below</li>
+      <li>Fill in the voter information with the required columns: <strong>voter_no</strong>, <strong>name</strong>, and <strong>house</strong> (optional)</li>
+      <li>Upload the completed Excel (.xlsx, .xls) or CSV file using the form below</li>
+      <li>The system supports up to 10MB file size</li>
+      <li>Duplicate voter numbers will be skipped unless "Overwrite existing voters" is checked</li>
     </ul>
   </div>
   
-  <div class="excel-format">
-    <h4>📊 Required Excel Format</h4>
-    <table>
-      <thead>
-        <tr>
-          <th>voter_no</th>
-          <th>name</th>
-          <th>house</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>V001</td>
-          <td>John Doe</td>
-          <td>Red House</td>
-        </tr>
-        <tr>
-          <td>V002</td>
-          <td>Jane Smith</td>
-          <td>Blue House</td>
-        </tr>
-        <tr>
-          <td>V003</td>
-          <td>Mary Johnson</td>
-          <td>Green House</td>
-        </tr>
-      </tbody>
-    </table>
-    <p style="margin-top: 10px; color: #856404;">
-      <strong>Note:</strong> The first row must contain the column headers exactly as shown above.
-    </p>
+  <div class="info-card warning">
+    <h3>Required File Format</h3>
+    <div class="format-table-container">
+      <table class="format-table">
+        <thead>
+          <tr>
+            <th>VOTER_NO</th>
+            <th>NAME</th>
+            <th>HOUSE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>V001</td>
+            <td>John Doe</td>
+            <td>Red House</td>
+          </tr>
+          <tr>
+            <td>V002</td>
+            <td>Jane Smith</td>
+            <td>Blue House</td>
+          </tr>
+          <tr>
+            <td>V003</td>
+            <td>Mary Johnson</td>
+            <td>Green House</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="format-note">
+      <span>⚠️</span>
+      <span><strong>Important:</strong> The first row must contain the column headers exactly as shown above (voter_no, name, house).</span>
+    </div>
   </div>
   
-  <div class="form-container">
+  <div class="form-card">
+    {% if form.errors or form.non_field_errors %}
+      <div class="error-list">
+        <strong>⚠️ Please correct the errors below:</strong>
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          {% if field.errors %}
+            <ul>
+              {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       
-      {% if form.errors %}
-        <div class="errornote">
-          <strong>Please correct the errors below:</strong>
-          {{ form.non_field_errors }}
-        </div>
-      {% endif %}
+      <div class="form-group">
+        <label for="{{ form.excel_file.id_for_label }}">
+          {{ form.excel_file.label }}
+        </label>
+        {{ form.excel_file }}
+        {% if form.excel_file.help_text %}
+          <span class="help-text">{{ form.excel_file.help_text }}</span>
+        {% endif %}
+      </div>
       
-      {% for field in form %}
-        <div class="form-row">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="errorlist">
-              {{ field.errors }}
-            </div>
-          {% endif %}
-          {% if field.help_text %}
-            <span class="helptext">{{ field.help_text }}</span>
-          {% endif %}
+      <div class="form-group">
+        <div class="checkbox-group">
+          {{ form.overwrite_existing }}
+          <label for="{{ form.overwrite_existing.id_for_label }}">
+            {{ form.overwrite_existing.label }}
+          </label>
         </div>
-      {% endfor %}
+        {% if form.overwrite_existing.help_text %}
+          <span class="help-text">{{ form.overwrite_existing.help_text }}</span>
+        {% endif %}
+      </div>
       
-      <div class="submit-row">
-        <button type="submit" class="button">Import Voters</button>
-        <a href="../" class="button cancel">Cancel</a>
-        <a href="../download-template/" class="button" style="background-color: #28a745; float: right;">Download Template</a>
+      <div class="button-row">
+        <button type="submit" class="btn btn-primary">
+          <span>Import Voters</span>
+        </button>
+        <a href="../" class="btn btn-secondary">
+          <span>✕</span>
+          <span>Cancel</span>
+        </a>
+        <a href="../download-template/" class="btn btn-success">
+          <span>Download Template</span>
+        </a>
       </div>
     </form>
   </div>
