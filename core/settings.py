@@ -166,6 +166,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*",  # All HTTPS origins
-    "http://*",   # All HTTP origins (development only)
+    "https://kss-e-vote-backend.onrender.com/"
 ]
