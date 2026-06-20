@@ -9,23 +9,25 @@
   }
 
   .import-container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
   
   .page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
   }
 
   .page-header h1 {
     margin: 0;
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.5px;
   }
 
   .page-header p {
@@ -36,106 +38,40 @@
   
   .info-card {
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    border-left: 4px solid #2196F3;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-left: 5px solid #3b82f6;
   }
 
-  .info-card.warning {
-    border-left-color: #ff9800;
-    background: #fff8e1;
-  }
-  
   .info-card h3 {
     margin: 0 0 16px 0;
-    color: #1976D2;
+    color: #1d4ed8;
     font-size: 18px;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
   }
-
-  .info-card.warning h3 {
-    color: #f57c00;
-  }
   
   .info-card ul {
     margin: 0;
-    padding-left: 24px;
+    padding-left: 20px;
     line-height: 1.8;
   }
 
   .info-card ul li {
     margin-bottom: 8px;
-    color: #424242;
-  }
-  
-  .format-table-container {
-    overflow-x: auto;
-    margin-top: 16px;
-  }
-
-  .format-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  
-  .format-table thead {
-    background: #f5f5f5;
-  }
-
-  .format-table th {
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #424242;
-    border-bottom: 2px solid #e0e0e0;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .format-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #616161;
-  }
-
-  .format-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  .format-table tbody tr:hover {
-    background: #fafafa;
-  }
-  
-  .format-note {
-    margin-top: 12px;
-    padding: 12px;
-    background: #fff3cd;
-    border-radius: 4px;
-    color: #856404;
-    font-size: 13px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .format-note strong {
-    color: #664d03;
+    color: #4b5563;
   }
   
   .form-card {
     background: white;
-    border-radius: 8px;
-    padding: 28px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
   }
   
   .form-group {
@@ -146,33 +82,69 @@
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #424242;
+    color: #374151;
     font-size: 14px;
   }
   
-  .form-group input[type="file"] {
-    width: 100%;
-    padding: 12px;
-    border: 2px dashed #ddd;
-    border-radius: 6px;
-    background: #fafafa;
+  .file-dropzone {
+    border: 2.5px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    background: #f9fafb;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    transition: all 0.2s ease;
   }
   
-  .form-group input[type="file"]:hover {
-    border-color: #667eea;
-    background: #f5f7ff;
+  .file-dropzone:hover, .file-dropzone.dragover {
+    border-color: #6366f1;
+    background: #eef2ff;
   }
 
+  .file-dropzone svg {
+    width: 48px;
+    height: 48px;
+    color: #9ca3af;
+    margin-bottom: 12px;
+  }
+
+  .file-dropzone p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+  }
+
+  .file-dropzone span {
+    font-weight: bold;
+    color: #4f46e5;
+  }
+
+  .file-dropzone input[type="file"] {
+    display: none;
+  }
+
+  .selected-file-badge {
+    display: none;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    border-radius: 8px;
+    font-size: 13px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  
   .checkbox-group {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 6px;
+    gap: 10px;
+    padding: 14px;
+    background: #f3f4f6;
+    border-radius: 8px;
   }
   
   .checkbox-group input[type="checkbox"] {
@@ -185,42 +157,283 @@
     margin: 0 !important;
     cursor: pointer;
     font-weight: 500;
+    color: #374151;
   }
   
   .help-text {
     display: block;
-    color: #757575;
+    color: #6b7280;
     font-size: 13px;
     margin-top: 6px;
     line-height: 1.5;
   }
+
+  /* Interactive configuration area */
+  .interactive-config-area {
+    display: none;
+    margin-top: 30px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .section-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #111827;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-card .section-num {
+    background: #4f46e5;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .section-card p.subtitle {
+    margin: 0 0 20px 0;
+    color: #6b7280;
+    font-size: 13.5px;
+  }
+
+  /* Row Picker styles */
+  .row-picker-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+
+  .row-picker-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .row-picker-table th {
+    background: #f9fafb;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: #4b5563;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .row-picker-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+    vertical-align: middle;
+  }
+
+  .row-picker-table tr.header-candidate {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .row-picker-table tr.header-candidate:hover {
+    background: #f3f4f6;
+  }
+
+  .row-picker-table tr.selected-header-row {
+    background: #f5f3ff !important;
+  }
+
+  .row-picker-table tr.selected-header-row td {
+    color: #4f46e5;
+    font-weight: 600;
+  }
+
+  .radio-btn-cell {
+    width: 40px;
+    text-align: center;
+  }
+
+  .row-badge {
+    background: #e5e7eb;
+    color: #4b5563;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .selected-header-row .row-badge {
+    background: #c7d2fe;
+    color: #4338ca;
+  }
+
+  /* Mapping Grid */
+  .mapping-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .mapping-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+  }
+
+  .mapping-box.required {
+    border-top: 4px solid #ef4444;
+  }
+
+  .mapping-box.optional {
+    border-top: 4px solid #10b981;
+  }
+
+  .mapping-box h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .badge-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .mapping-box select {
+    width: 100% !important;
+    height: 42px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background-color: white !important;
+    font-size: 14px !important;
+    color: #374151 !important;
+    outline: none !important;
+    transition: border-color 0.2s !important;
+    box-sizing: border-box !important;
+    line-height: 1.5 !important;
+    appearance: select !important;
+    -webkit-appearance: select !important;
+  }
+
+  .mapping-box select:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  }
+
+  .mapping-box select option {
+    padding: 8px !important;
+    line-height: 1.8 !important;
+    font-size: 14px !important;
+  }
+
+  .mapping-box .field-desc {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+  }
+
+  /* Preview Table */
+  .preview-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    max-height: 300px;
+  }
+
+  .preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .preview-table th {
+    background: #f3f4f6;
+    padding: 12px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+  }
+
+  .preview-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #4b5563;
+  }
+
+  .preview-table tr:last-child td {
+    border-bottom: none;
+  }
   
   .error-list {
-    background: #ffebee;
-    border-left: 4px solid #f44336;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    background: #fee2e2;
+    border-left: 5px solid #ef4444;
+    padding: 16px;
+    margin-bottom: 24px;
+    border-radius: 8px;
   }
 
   .error-list strong {
-    color: #c62828;
+    color: #991b1b;
     display: block;
     margin-bottom: 8px;
+    font-size: 15px;
   }
 
   .error-list ul {
     margin: 0;
     padding-left: 20px;
-    color: #d32f2f;
+    color: #b91c1c;
   }
   
   .button-row {
-    margin-top: 28px;
+    margin-top: 32px;
     padding-top: 24px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #e5e7eb;
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
     flex-wrap: wrap;
   }
@@ -228,7 +441,7 @@
   .btn {
     padding: 12px 24px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
@@ -237,51 +450,39 @@
     align-items: center;
     gap: 8px;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
   .btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  }
-
-  .btn:active {
-    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
   
   .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
   }
   
   .btn-secondary {
-    background: #6c757d;
+    background: #6b7280;
     color: white;
+  }
+
+  .btn-secondary:hover {
+    background: #4b5563;
   }
   
   .btn-success {
-    background: #28a745;
+    background: #10b981;
     color: white;
     margin-left: auto;
   }
 
   .btn-success:hover {
-    background: #218838;
+    background: #059669;
   }
 
   @media (max-width: 768px) {
-    .page-header {
-      padding: 20px;
-    }
-
-    .page-header h1 {
-      font-size: 22px;
-    }
-
-    .info-card, .form-card {
-      padding: 16px;
-    }
-
     .button-row {
       flex-direction: column;
       align-items: stretch;
@@ -300,57 +501,23 @@
 {% endblock %}
 
 {% block content %}
+<!-- Include SheetJS from CDN to read Excel/CSV client-side -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <div class="import-container">
   <div class="page-header">
     <h1>📥 Import Voters</h1>
-    <p>Upload an Excel or CSV file to import voter data into the system</p>
+    <p>Upload an Excel or CSV file, pick the header row, map the columns, and import voter data</p>
   </div>
   
   <div class="info-card">
     <h3>Instructions</h3>
     <ul>
-      <li>Download the Excel template by clicking the "Download Template" button below</li>
-      <li>Fill in the voter information with the required columns: <strong>voter_no</strong>, <strong>name</strong>, and <strong>house</strong> (optional)</li>
-      <li>Upload the completed Excel (.xlsx, .xls) or CSV file using the form below</li>
-      <li>The system supports up to 10MB file size</li>
-      <li>Duplicate voter numbers will be skipped unless "Overwrite existing voters" is checked</li>
+      <li>Select or drag & drop an Excel (.xlsx, .xls) or CSV (.csv) file in the zone below.</li>
+      <li>Once the file is selected, select the row containing the column headers from the preview.</li>
+      <li>Map the header columns to the system's voter fields (Voter Number, Full Name, House).</li>
+      <li>Duplicate voter numbers will be skipped unless "Update existing voters" is checked.</li>
     </ul>
-  </div>
-  
-  <div class="info-card warning">
-    <h3>Required File Format</h3>
-    <div class="format-table-container">
-      <table class="format-table">
-        <thead>
-          <tr>
-            <th>VOTER_NO</th>
-            <th>NAME</th>
-            <th>HOUSE</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>V001</td>
-            <td>John Doe</td>
-            <td>Red House</td>
-          </tr>
-          <tr>
-            <td>V002</td>
-            <td>Jane Smith</td>
-            <td>Blue House</td>
-          </tr>
-          <tr>
-            <td>V003</td>
-            <td>Mary Johnson</td>
-            <td>Green House</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="format-note">
-      <span>⚠️</span>
-      <span><strong>Important:</strong> The first row must contain the column headers exactly as shown above (voter_no, name, house).</span>
-    </div>
   </div>
   
   <div class="form-card">
@@ -370,17 +537,28 @@
       </div>
     {% endif %}
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="import-form">
       {% csrf_token %}
       
+      <!-- Hidden inputs for column mappings and header row -->
+      <input type="hidden" name="col_voter_no" id="mapped-voter-no" value="">
+      <input type="hidden" name="col_full_name" id="mapped-full-name" value="">
+      <input type="hidden" name="col_house" id="mapped-house" value="">
+      <input type="hidden" name="header_row" id="header-row-input" value="0">
+
       <div class="form-group">
-        <label for="{{ form.excel_file.id_for_label }}">
-          {{ form.excel_file.label }}
-        </label>
-        {{ form.excel_file }}
-        {% if form.excel_file.help_text %}
-          <span class="help-text">{{ form.excel_file.help_text }}</span>
-        {% endif %}
+        <label>Select File</label>
+        <div class="file-dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <p>Drag and drop your file here, or <span>browse</span></p>
+          <input type="file" id="file-input" name="excel_file" accept=".xlsx,.xls,.csv" onchange="handleFileSelect(event)">
+        </div>
+        <div class="selected-file-badge" id="file-badge">
+          <span>📄</span>
+          <span id="file-name-text">filename.xlsx</span>
+        </div>
       </div>
       
       <div class="form-group">
@@ -395,8 +573,95 @@
         {% endif %}
       </div>
       
+      <!-- Interactive configurations area -->
+      <div class="interactive-config-area" id="config-area">
+        
+        <!-- Step 1: Row Picker -->
+        <div class="section-card">
+          <h3>
+            <span class="section-num">1</span>
+            Select Header Row
+          </h3>
+          <p class="subtitle">Click on the row in your spreadsheet that contains the column headers (labels like Voter No, Name, etc.).</p>
+          
+          <div class="row-picker-wrapper">
+            <table class="row-picker-table">
+              <thead>
+                <tr>
+                  <th class="radio-btn-cell">Select</th>
+                  <th style="width: 100px;">Row</th>
+                  <th>Cell Contents preview</th>
+                </tr>
+              </thead>
+              <tbody id="row-picker-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Step 2: Mapping Grid -->
+        <div class="section-card">
+          <h3>
+            <span class="section-num">2</span>
+            Map Columns to Fields
+          </h3>
+          <p class="subtitle">Choose which columns in your spreadsheet match the required voter fields.</p>
+          
+          <div class="mapping-grid">
+            <!-- Voter No (Required) -->
+            <div class="mapping-box required">
+              <h4>
+                <span>Voter Number</span>
+                <span class="badge badge-danger">Required</span>
+              </h4>
+              <select id="select-voter-no" onchange="updateHiddenMappingFields()"></select>
+              <div class="field-desc">Unique identifier for the voter (e.g. Admission Number, Registration ID, Code).</div>
+            </div>
+
+            <!-- Full Name (Required) -->
+            <div class="mapping-box required">
+              <h4>
+                <span>Full Name</span>
+                <span class="badge badge-danger">Required</span>
+              </h4>
+              <select id="select-full-name" onchange="updateHiddenMappingFields()"></select>
+              <div class="field-desc">The voter's full name.</div>
+            </div>
+
+            <!-- House (Optional) -->
+            <div class="mapping-box optional">
+              <h4>
+                <span>House / Group</span>
+                <span class="badge badge-success">Optional</span>
+              </h4>
+              <select id="select-house" onchange="updateHiddenMappingFields()">
+                <option value="">-- Do Not Import --</option>
+              </select>
+              <div class="field-desc">Voter house. Valid values: AGAKHAN, AFRICA, KAKUNGULU, LUWANGULA.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Data Preview Section -->
+        <div class="section-card">
+          <h3>
+            <span class="section-num">3</span>
+            Import Data Preview
+          </h3>
+          <p class="subtitle">This preview shows the parsed data rows following your selected header row.</p>
+          <div class="preview-table-wrapper">
+            <table class="preview-table" id="preview-table">
+              <thead>
+                <tr id="preview-headers"></tr>
+              </thead>
+              <tbody id="preview-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
       <div class="button-row">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
           <span>Import Voters</span>
         </button>
         <a href="../" class="btn btn-secondary">
@@ -410,4 +675,311 @@
     </form>
   </div>
 </div>
+
+<script>
+  let sheetMatrix = []; // 2D array representation of the sheet
+
+  // Drag and Drop listeners
+  const dropzone = document.getElementById('dropzone');
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, e => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    }, false);
+  });
+
+  dropzone.addEventListener('drop', e => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length) {
+      document.getElementById('file-input').files = files;
+      processFile(files[0]);
+    }
+  });
+
+  function handleFileSelect(event) {
+    const files = event.target.files;
+    if (files.length) {
+      processFile(files[0]);
+    }
+  }
+
+  function processFile(file) {
+    // Show selected file name badge
+    const badge = document.getElementById('file-badge');
+    const nameText = document.getElementById('file-name-text');
+    nameText.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    badge.style.display = 'inline-flex';
+
+    // Read the file using SheetJS
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result);
+      try {
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // Convert sheet to 2D array matrix including blank cells/rows
+        sheetMatrix = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+        
+        if (sheetMatrix.length === 0) {
+          alert('The uploaded file is empty.');
+          return;
+        }
+
+        // Render the header row picker table
+        renderRowPicker(sheetMatrix.slice(0, 10));
+
+        // Auto-detect best header row from first 10 rows
+        const bestHeaderIdx = autoDetectHeaderRow(sheetMatrix.slice(0, 10));
+        selectHeaderRow(bestHeaderIdx);
+
+        // Display the interactive configuration area
+        document.getElementById('config-area').style.display = 'block';
+        document.getElementById('submit-btn').removeAttribute('disabled');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to read file. Please ensure it is a valid Excel or CSV file.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderRowPicker(rows) {
+    const tbody = document.getElementById('row-picker-tbody');
+    tbody.innerHTML = '';
+
+    rows.forEach((row, idx) => {
+      const tr = document.createElement('tr');
+      tr.className = 'header-candidate';
+      tr.id = `row-picker-tr-${idx}`;
+      tr.onclick = () => selectHeaderRow(idx);
+
+      // Radio cell
+      const tdRadio = document.createElement('td');
+      tdRadio.className = 'radio-btn-cell';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'header_row_radio';
+      radio.id = `row-picker-radio-${idx}`;
+      radio.value = idx;
+      radio.onclick = (e) => {
+        e.stopPropagation();
+        selectHeaderRow(idx);
+      };
+      tdRadio.appendChild(radio);
+      tr.appendChild(tdRadio);
+
+      // Label cell
+      const tdLabel = document.createElement('td');
+      const span = document.createElement('span');
+      span.className = 'row-badge';
+      span.textContent = `Row ${idx + 1}`;
+      tdLabel.appendChild(span);
+      tr.appendChild(tdLabel);
+
+      // Data preview cell
+      const tdData = document.createElement('td');
+      const previewVals = row.map(v => String(v || '').trim()).filter(v => v !== '');
+      if (previewVals.length === 0) {
+        tdData.innerHTML = '<span style="color: #9ca3af; font-style: italic;">[Blank Row]</span>';
+      } else {
+        tdData.textContent = previewVals.slice(0, 8).join(' | ') + (previewVals.length > 8 ? ' ...' : '');
+      }
+      tr.appendChild(tdData);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function autoDetectHeaderRow(rows) {
+    const targetKeywords = ['voter', 'no', 'number', 'admission', 'name', 'full_name', 'house', 'group', 'class'];
+    let bestIdx = 0;
+    let maxMatches = 0;
+
+    rows.forEach((row, idx) => {
+      let matches = 0;
+      row.forEach(val => {
+        const cleanVal = String(val || '').toLowerCase().trim();
+        targetKeywords.forEach(kw => {
+          if (cleanVal.includes(kw)) {
+            matches++;
+          }
+        });
+      });
+      if (matches > maxMatches) {
+        maxMatches = matches;
+        bestIdx = idx;
+      }
+    });
+
+    return bestIdx;
+  }
+
+  function selectHeaderRow(rowIdx) {
+    // Save selection in hidden field
+    document.getElementById('header-row-input').value = rowIdx;
+
+    // Highlight row visually in table
+    const allTrs = document.querySelectorAll('.row-picker-table tbody tr');
+    allTrs.forEach(tr => tr.className = 'header-candidate');
+    
+    const selectedTr = document.getElementById(`row-picker-tr-${rowIdx}`);
+    if (selectedTr) {
+      selectedTr.className = 'header-candidate selected-header-row';
+    }
+
+    const selectedRadio = document.getElementById(`row-picker-radio-${rowIdx}`);
+    if (selectedRadio) {
+      selectedRadio.checked = true;
+    }
+
+    // Process mapping and preview updates using new header row
+    const rawHeaders = sheetMatrix[rowIdx] || [];
+    const cleanHeaders = rawHeaders.map((h, i) => {
+      const val = String(h || '').trim();
+      return val || `Column ${i + 1}`;
+    });
+
+    buildMappingInterface(cleanHeaders);
+
+    // Build the preview using data below this header row
+    const dataRows = sheetMatrix.slice(rowIdx + 1);
+    
+    // Map data rows to objects using cleanHeaders
+    const previewData = dataRows.slice(0, 5).map(row => {
+      const obj = {};
+      cleanHeaders.forEach((h, i) => {
+        obj[h] = row[i] !== undefined ? String(row[i]).trim() : '';
+      });
+      return obj;
+    });
+
+    buildPreviewTable(cleanHeaders, previewData);
+  }
+
+  function buildMappingInterface(headers) {
+    const selectVoterNo = document.getElementById('select-voter-no');
+    const selectFullName = document.getElementById('select-full-name');
+    const selectHouse = document.getElementById('select-house');
+
+    // Clear options
+    selectVoterNo.innerHTML = '';
+    selectFullName.innerHTML = '';
+    selectHouse.innerHTML = '<option value="">-- Do Not Import --</option>';
+
+    headers.forEach(header => {
+      const opt1 = new Option(header, header);
+      const opt2 = new Option(header, header);
+      const opt3 = new Option(header, header);
+      
+      selectVoterNo.add(opt1);
+      selectFullName.add(opt2);
+      selectHouse.add(opt3);
+    });
+
+    // Auto-map columns based on common names
+    let matchedVoterNo = false;
+    let matchedFullName = false;
+    let matchedHouse = false;
+
+    headers.forEach(header => {
+      const lower = header.toLowerCase();
+      
+      if (!matchedVoterNo && (lower === 'voter_no' || lower === 'voter no' || lower === 'voter_number' || lower === 'voter number' || lower === 'admission_no' || lower === 'admission_number' || lower === 'id' || lower === 'code' || lower.includes('voter_no') || lower.includes('voter no') || lower.includes('admission'))) {
+        selectVoterNo.value = header;
+        matchedVoterNo = true;
+      }
+      
+      if (!matchedFullName && (lower === 'full_name' || lower === 'full name' || lower === 'name' || lower === 'voter_name' || lower === 'voter name' || lower.includes('name') || lower.includes('full'))) {
+        selectFullName.value = header;
+        matchedFullName = true;
+      }
+      
+      if (!matchedHouse && (lower === 'house' || lower === 'voter_house' || lower === 'voter house' || lower === 'group' || lower === 'team' || lower === 'house_choice' || lower.includes('house'))) {
+        selectHouse.value = header;
+        matchedHouse = true;
+      }
+    });
+
+    // Fallback logic to avoid duplicate mapping on the first option and keep form valid
+    if (!matchedVoterNo && headers.length > 0) {
+      selectVoterNo.selectedIndex = 0;
+    }
+    if (!matchedFullName && headers.length > 0) {
+      selectFullName.selectedIndex = headers.length > 1 ? 1 : 0;
+    }
+
+    updateHiddenMappingFields();
+  }
+
+  function buildPreviewTable(headers, rows) {
+    const headersTr = document.getElementById('preview-headers');
+    const rowsTbody = document.getElementById('preview-rows');
+
+    headersTr.innerHTML = '';
+    rowsTbody.innerHTML = '';
+
+    // Create table headers
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      headersTr.appendChild(th);
+    });
+
+    // Create rows
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        td.textContent = row[header] !== undefined ? row[header] : '';
+        tr.appendChild(td);
+      });
+      rowsTbody.appendChild(tr);
+    });
+  }
+
+  function updateHiddenMappingFields() {
+    const voterNo = document.getElementById('select-voter-no').value;
+    const fullName = document.getElementById('select-full-name').value;
+    const house = document.getElementById('select-house').value;
+
+    document.getElementById('mapped-voter-no').value = voterNo;
+    document.getElementById('mapped-full-name').value = fullName;
+    document.getElementById('mapped-house').value = house;
+
+    // Basic validation check
+    const submitBtn = document.getElementById('submit-btn');
+    if (voterNo && fullName && voterNo !== fullName) {
+      submitBtn.removeAttribute('disabled');
+    } else {
+      submitBtn.setAttribute('disabled', 'true');
+    }
+  }
+
+  // Ensure validation on form submit
+  document.getElementById('import-form').addEventListener('submit', function(e) {
+    const voterNo = document.getElementById('mapped-voter-no').value;
+    const fullName = document.getElementById('mapped-full-name').value;
+
+    if (!voterNo || !fullName) {
+      e.preventDefault();
+      alert('Voter Number and Full Name mappings are required.');
+    }
+    
+    if (voterNo === fullName) {
+      e.preventDefault();
+      alert('Voter Number and Full Name cannot be mapped to the same column.');
+    }
+  });
+</script>
 {% endblock %}

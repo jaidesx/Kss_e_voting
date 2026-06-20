@@ -3,15 +3,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from candidates.api_views import CandidateViewSet
-from posts.api_views import PostViewSet
+from candidates.views import CandidateViewSet
+from posts.views import PostViewSet, ElectionViewSet
 
-from auth.api_views import voter_login, viewer_login
-from voting.api_views import live_results, cast_bulk_votes, voter_status
+from auth.views import voter_login, viewer_login
+from voting.views import live_results, cast_bulk_votes, voter_status
 
 router = DefaultRouter()
 router.register(r'api/candidates', CandidateViewSet, basename='candidate')
 router.register(r'api/positions', PostViewSet, basename='position')
+router.register(r'api/elections', ElectionViewSet, basename='election')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

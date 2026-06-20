@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from candidates.serializers import CandidateResultSerializer
 
-from posts.models import Post
+from posts.models import Post, Election
 from voting.models import Vote
 
 class LiveResultsSerializer(serializers.ModelSerializer):
@@ -26,6 +26,17 @@ class VoteSerializer(serializers.ModelSerializer):
         post = data['post']
         candidate = data['candidate']
         
+        # Check active election
+        active_election = Election.objects.filter(is_active=True).first()
+        if not active_election:
+            raise serializers.ValidationError("There is no active election at the moment.")
+        if post.election != active_election:
+            raise serializers.ValidationError("This position is not part of the active election.")
+        
+        # Check if voter is eligible for this post
+        if not post.is_voter_eligible(voter):
+            raise serializers.ValidationError("You are not eligible to vote for this position.")
+        
         # Check if voter already voted for this post
         if Vote.objects.filter(voter=voter, post=post).exists():
             raise serializers.ValidationError("You have already voted for this position.")
@@ -39,15 +50,9 @@ class VoteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         voter = self.context['request'].user
         vote = Vote.objects.create(voter=voter, **validated_data)
-        
-        # Update voter's has_voted status
-        if not voter.has_voted:
-            voter.has_voted = True
-            voter.save()
-        
         return vote
-
-
+ 
+ 
 class BulkVoteSerializer(serializers.Serializer):
     votes = VoteSerializer(many=True)
     
@@ -66,10 +71,25 @@ class BulkVoteSerializer(serializers.Serializer):
         voter = self.context['request'].user
         votes_data = data['votes']
         
+        active_election = Election.objects.filter(is_active=True).first()
+        if not active_election:
+            raise serializers.ValidationError("There is no active election at the moment.")
+        
         # Validate each vote
         for vote_data in votes_data:
             post = vote_data['post']
             candidate = vote_data['candidate']
+            
+            if post.election != active_election:
+                raise serializers.ValidationError(
+                    f"Position {post.title} is not part of the active election."
+                )
+            
+            # Check voter eligibility for this post
+            if not post.is_voter_eligible(voter):
+                raise serializers.ValidationError(
+                    f"You are not eligible to vote for position: {post.title}"
+                )
             
             # Check if voter already voted for this post
             if Vote.objects.filter(voter=voter, post=post).exists():
@@ -98,10 +118,5 @@ class BulkVoteSerializer(serializers.Serializer):
                 candidate=vote_data['candidate']
             )
             created_votes.append(vote)
-        
-        # Update voter's has_voted status
-        if not voter.has_voted:
-            voter.has_voted = True
-            voter.save()
         
         return created_votes

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voter Access Slips — KSS E-Voting</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: #1f2937;
+            padding: 20px;
+        }
+
+        /* ── Screen toolbar (hidden on print) ─────────────────────── */
+        .toolbar {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .toolbar h1 { font-size: 18px; color: #111827; }
+        .toolbar p  { font-size: 13px; color: #6b7280; margin-top: 4px; }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-print  { background: #4f46e5; color: white; }
+        .btn-back   { background: #6b7280; color: white; }
+
+        /* ── Slip grid ─────────────────────────────────────────────── */
+        .slips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        /* ── One complete slip ─────────────────────────────────────── */
+        .slip {
+            border: 2px solid #374151;
+            border-radius: 6px;
+            overflow: hidden;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* ── Top half — teacher keeps ──────────────────────────────── */
+        .slip-top {
+            padding: 14px 16px 12px;
+            background: #ffffff;
+        }
+
+        .slip-school-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .slip-school-name {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #111827;
+        }
+
+        .slip-tag {
+            font-size: 9px;
+            font-weight: 600;
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 2px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .slip-identity {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px 12px;
+            align-items: start;
+        }
+
+        .slip-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1.2;
+        }
+
+        .slip-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        .slip-meta strong {
+            color: #374151;
+        }
+
+        .slip-house-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #ede9fe;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            align-self: center;
+        }
+
+        /* Teacher check-off box */
+        .teacher-row {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: #9ca3af;
+        }
+        .teacher-row .checkbox-square {
+            width: 12px;
+            height: 12px;
+            border: 1.5px solid #9ca3af;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ── Tear line ─────────────────────────────────────────────── */
+        .tear-line {
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: white;
+            position: relative;
+        }
+        /* Left and right notches to indicate tear points */
+        .tear-line::before,
+        .tear-line::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #374151;
+            flex-shrink: 0;
+        }
+        .tear-dashes {
+            flex: 1;
+            height: 0;
+            border-top: 2px dashed #374151;
+            margin: 0 6px;
+        }
+        .tear-label {
+            font-size: 8px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            background: white;
+            padding: 0 6px;
+        }
+        .scissors {
+            font-size: 13px;
+            line-height: 1;
+            margin-right: 4px;
+            transform: rotate(270deg);
+            display: inline-block;
+        }
+
+        /* ── Bottom half — student keeps ───────────────────────────── */
+        .slip-bottom {
+            padding: 12px 16px 14px;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .pin-instruction {
+            font-size: 9px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .pin-display {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: #1f2937;
+            background: white;
+            border: 2px solid #374151;
+            border-radius: 6px;
+            padding: 6px 20px;
+        }
+
+        .pin-warning {
+            margin-top: 8px;
+            font-size: 8.5px;
+            color: #b91c1c;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* ── Empty state ───────────────────────────────────────────── */
+        .empty {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+
+        /* ── Print overrides ───────────────────────────────────────── */
+        @media print {
+            .toolbar { display: none !important; }
+
+            body { padding: 10px; }
+
+            .slips-grid {
+                gap: 16px;
+            }
+
+            .slip {
+                border-color: #111827;
+            }
+            .tear-line::before,
+            .tear-line::after {
+                border-color: #111827;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div>
+            <h1>🖨️ Voter Access Slips — Ready to Print</h1>
+            <p>Each slip has two sections separated by a tear line. The <strong>top half</strong> (identity) stays with the teacher. The <strong>bottom half</strong> (PIN only) goes to the student privately.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="javascript:history.back()" class="btn btn-back">← Go Back</a>
+            <button onclick="window.print()" class="btn btn-print">🖨️ Print (Ctrl + P)</button>
+        </div>
+    </div>
+
+    <div class="slips-grid">
+        {% for voter in voters %}
+            <div class="slip">
+
+                <!-- TOP HALF — Teacher keeps this -->
+                <div class="slip-top">
+                    <div class="slip-school-row">
+                        <span class="slip-school-name">Kibuli Secondary School</span>
+                        <span class="slip-tag">Voter Slip</span>
+                    </div>
+                    <div class="slip-identity">
+                        <div>
+                            <div class="slip-name">{{ voter.full_name }}</div>
+                            <div class="slip-meta">
+                                Student ID: <strong>{{ voter.voter_no }}</strong>
+                            </div>
+                        </div>
+                        {% if voter.house %}
+                            <span class="slip-house-badge">{{ voter.house }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="teacher-row">
+                        <span class="checkbox-square"></span>
+                        <span>Teacher: verify identity &amp; tick before handing PIN stub to student</span>
+                    </div>
+                </div>
+
+                <!-- TEAR LINE -->
+                <div class="tear-line">
+                    <div class="tear-dashes"></div>
+                    <span class="tear-label"><span class="scissors">✂</span> Tear here</span>
+                    <div class="tear-dashes"></div>
+                </div>
+
+                <!-- BOTTOM HALF — Student keeps this (PIN only) -->
+                <div class="slip-bottom">
+                    <div class="pin-instruction">🔒 Your Secret Voting PIN</div>
+                    <div class="pin-display">{{ voter.pin }}</div>
+                    <div class="pin-warning">
+                        Do not show this PIN to anyone. Use it once to log in and cast your vote.
+                    </div>
+                </div>
+
+            </div>
+        {% empty %}
+            <div class="empty">No voter slips to display.</div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

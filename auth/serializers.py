@@ -1,18 +1,29 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import check_password
 
 from voting.models import Voter
 from .models import Viewer
 
 class VoterLoginSerializer(serializers.Serializer):
     voter_no = serializers.CharField(max_length=50)
-    
-    def validate_voter_no(self, value):
+    pin = serializers.CharField(max_length=20, write_only=True)
+
+    def validate(self, data):
+        voter_no = data.get('voter_no', '').strip()
+        pin = data.get('pin', '').strip()
+
         try:
-            voter = Voter.objects.get(voter_no=value)
+            from voting.models import Voter
+            voter = Voter.objects.get(voter_no=voter_no)
         except Voter.DoesNotExist:
-            raise serializers.ValidationError("Invalid voter number.")
-        return value
+            raise serializers.ValidationError("Invalid voter number or PIN.")
+
+        if not voter.pin or not check_password(pin, voter.pin):
+            raise serializers.ValidationError("Invalid voter number or PIN.")
+
+        data['voter'] = voter
+        return data
 
 
 class ViewerLoginSerializer(serializers.Serializer):

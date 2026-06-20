@@ -7,17 +7,24 @@ User = get_user_model()
 
 
 class Voter(models.Model):
+    HOUSE_CHOICES = [
+        ('AGAKHAN', 'Agakhan'),
+        ('AFRICA', 'Africa'),
+        ('KAKUNGULU', 'Kakungulu'),
+        ('LUWANGULA', 'Luwangula'),
+    ]
+
     voter_no = models.CharField(max_length=50, unique=True)
-    name = models.CharField(max_length=100)
-    house = models.CharField(max_length=50)
-    has_voted = models.BooleanField(default=False)
+    full_name = models.CharField(max_length=100)
+    house = models.CharField(max_length=50, choices=HOUSE_CHOICES)
+    pin = models.CharField(max_length=128, blank=True, null=True)
 
     @property
     def is_authenticated(self):
         return True
     
     def __str__(self):
-        return self.name
+        return self.full_name
 
 class Vote(models.Model):
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
