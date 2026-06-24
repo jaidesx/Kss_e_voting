@@ -42,7 +42,7 @@ def live_results(request):
         }, status=status.HTTP_200_OK)
 
     posts = Post.objects.filter(election=election).prefetch_related('candidates')
-    serializer = LiveResultsSerializer(posts, many=True)
+    serializer = LiveResultsSerializer(posts, many=True, context={'request': request})
     
     total_voters = Voter.objects.count()
     voted_count = Voter.objects.filter(vote__post__election=election).distinct().count()
