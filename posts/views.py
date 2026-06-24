@@ -41,9 +41,12 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
         # Filter by voter's house eligibility rules if the user is authenticated as a Voter
         user = self.request.user
         if user and user.is_authenticated and isinstance(user, Voter):
-            queryset = queryset.filter(
-                Q(eligible_houses__isnull=True) | Q(eligible_houses__house=user.house)
-            ).distinct()
+            if user.house:
+                queryset = queryset.filter(
+                    Q(eligible_houses__isnull=True) | Q(eligible_houses__house=user.house)
+                ).distinct()
+            else:
+                queryset = queryset.filter(eligible_houses__isnull=True).distinct()
 
         return queryset
 

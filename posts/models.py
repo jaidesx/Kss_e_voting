@@ -38,6 +38,8 @@ class Post(models.Model):
         eligible_houses = self.eligible_houses.all()
         if not eligible_houses.exists():
             return True
+        if not voter.house:
+            return False
         return eligible_houses.filter(house=voter.house).exists()
 
     def __str__(self):
