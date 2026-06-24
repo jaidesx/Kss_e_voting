@@ -37,7 +37,13 @@ class VoteSerializer(serializers.ModelSerializer):
         if not post.is_voter_eligible(voter):
             raise serializers.ValidationError("You are not eligible to vote for this position.")
         
-        # Check if voter already voted for this post
+        # Enforce required_selections if voting via the single vote endpoint
+        if not self.parent and post.required_selections != 1:
+            raise serializers.ValidationError(
+                f"Position {post.title} requires exactly {post.required_selections} selections. Please use the bulk voting endpoint."
+            )
+        
+        # Check if voter already voted for this post in DB
         if Vote.objects.filter(voter=voter, post=post).exists():
             raise serializers.ValidationError("You have already voted for this position.")
         
@@ -59,12 +65,6 @@ class BulkVoteSerializer(serializers.Serializer):
     def validate_votes(self, votes_data):
         if not votes_data:
             raise serializers.ValidationError("At least one vote is required.")
-        
-        # Check for duplicate posts in the same request
-        post_ids = [vote['post'].id for vote in votes_data]
-        if len(post_ids) != len(set(post_ids)):
-            raise serializers.ValidationError("Cannot vote for the same position multiple times.")
-        
         return votes_data
     
     def validate(self, data):
@@ -75,11 +75,14 @@ class BulkVoteSerializer(serializers.Serializer):
         if not active_election:
             raise serializers.ValidationError("There is no active election at the moment.")
         
-        # Validate each vote
+        # Group votes by post to validate quantities
+        post_selections = {}
         for vote_data in votes_data:
             post = vote_data['post']
             candidate = vote_data['candidate']
+            post_selections.setdefault(post, []).append(candidate.id)
             
+            # Verify basic election matching
             if post.election != active_election:
                 raise serializers.ValidationError(
                     f"Position {post.title} is not part of the active election."
@@ -91,16 +94,28 @@ class BulkVoteSerializer(serializers.Serializer):
                     f"You are not eligible to vote for position: {post.title}"
                 )
             
-            # Check if voter already voted for this post
-            if Vote.objects.filter(voter=voter, post=post).exists():
-                raise serializers.ValidationError(
-                    f"You have already voted for position: {post.title}"
-                )
-            
             # Check if candidate belongs to the post
             if candidate.post != post:
                 raise serializers.ValidationError(
                     f"Candidate {candidate.name} does not belong to position: {post.title}"
+                )
+        
+        # Validate grouped selections per post
+        for post, candidate_ids in post_selections.items():
+            # Check if selection count matches required_selections
+            if len(candidate_ids) != post.required_selections:
+                raise serializers.ValidationError(
+                    f"You must select exactly {post.required_selections} candidate(s) for position: {post.title}."
+                )
+            # Check for duplicate candidates in the same post
+            if len(candidate_ids) != len(set(candidate_ids)):
+                raise serializers.ValidationError(
+                    f"Cannot vote for the same candidate multiple times for position: {post.title}."
+                )
+            # Check if voter already voted for this post in DB
+            if Vote.objects.filter(voter=voter, post=post).exists():
+                raise serializers.ValidationError(
+                    f"You have already voted for position: {post.title}"
                 )
         
         return data

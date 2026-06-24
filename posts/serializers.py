@@ -16,7 +16,7 @@ class PostWithCandidatesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ['id', 'election', 'title', 'description', 'candidate_count', 'candidates']
+        fields = ['id', 'election', 'title', 'description', 'required_selections', 'candidate_count', 'candidates']
     
     def get_candidate_count(self, obj):
         return obj.candidates.count()

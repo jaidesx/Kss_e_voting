@@ -27,6 +27,10 @@ class Post(models.Model):
     election = models.ForeignKey(Election, on_delete=models.CASCADE, related_name='posts', null=True, blank=True)
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    required_selections = models.PositiveIntegerField(
+        default=1,
+        help_text="Number of candidates that must be selected for this position."
+    )
 
     class Meta:
         unique_together = ('election', 'title')

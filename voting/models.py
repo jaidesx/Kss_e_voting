@@ -33,4 +33,4 @@ class Vote(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('voter', 'post')
+        unique_together = ('voter', 'post', 'candidate')

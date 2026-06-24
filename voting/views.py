@@ -117,7 +117,7 @@ def voter_status(request):
             }
         }, status=status.HTTP_200_OK)
         
-    voted_positions = Vote.objects.filter(voter=voter, post__election=active_election).values_list('post__title', flat=True)
+    voted_positions = Vote.objects.filter(voter=voter, post__election=active_election).values_list('post__title', flat=True).distinct()
     
     # Get positions this voter is eligible to vote for in the active election
     all_posts = Post.objects.filter(election=active_election).prefetch_related('eligible_houses')
