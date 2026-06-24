@@ -12,13 +12,38 @@ from .serializers import VoterLoginSerializer,ViewerLoginSerializer
 @permission_classes([AllowAny])
 def voter_login(request):
     """
-    Voter login with voter_no and PIN
+    Voter login with voter_no
     Returns JWT token and voting status
     """
     serializer = VoterLoginSerializer(data=request.data)
     
     if serializer.is_valid():
         voter = serializer.validated_data['voter']
+        
+        # Check if voter has already voted for all eligible positions
+        from posts.models import Post, Election
+        from django.db.models import Count
+
+        active_election = Election.objects.filter(is_active=True).first()
+        if active_election:
+            posts = Post.objects.filter(election=active_election).prefetch_related('eligible_houses')
+            eligible_posts = [post for post in posts if post.is_voter_eligible(voter)]
+            if eligible_posts:
+                votes_by_post = {
+                    item['post']: item['vote_count']
+                    for item in Vote.objects.filter(voter=voter, post__in=eligible_posts)
+                                           .values('post')
+                                           .annotate(vote_count=Count('id'))
+                }
+                has_voted_all = all(
+                    votes_by_post.get(post.id, 0) >= (post.required_selections or 1)
+                    for post in eligible_posts
+                )
+                if has_voted_all:
+                    return Response({
+                        'success': False,
+                        'message': 'You have already voted.'
+                    }, status=status.HTTP_400_BAD_REQUEST)
         
         # Generate JWT token
         refresh = RefreshToken()
@@ -46,7 +71,7 @@ def voter_login(request):
     
     return Response({
         'success': False,
-        'message': 'Invalid voter number or PIN',
+        'message': 'Invalid voter number.',
         'errors': serializer.errors
     }, status=status.HTTP_401_UNAUTHORIZED)
 
