@@ -4,30 +4,22 @@ from django.urls import path
 from django.contrib import messages
 from django.http import HttpResponse
 from django.db import transaction
-from django.contrib.auth.hashers import make_password
 import pandas as pd
 from io import BytesIO
-import random
-import json
 from .models import Voter, Vote
 from .forms import ExcelImportForm
 
 
 @admin.register(Voter)
 class VoterAdmin(admin.ModelAdmin):
-    list_display = ['voter_no', 'full_name', 'house', 'has_pin']
+    list_display = ['voter_no', 'full_name', 'house']
     list_filter = ['house']
     search_fields = ['voter_no', 'full_name', 'house']
     list_per_page = 50
 
-    actions = ['export_voters', 'delete_all_voters', 'regenerate_and_print_slips']
+    actions = ['delete_all_voters']
 
     change_list_template = "admin/voters/voter_changelist.html"
-
-    def has_pin(self, obj):
-        return bool(obj.pin)
-    has_pin.boolean = True
-    has_pin.short_description = "PIN Set"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -38,9 +30,7 @@ class VoterAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def import_excel(self, request):
-        """Handle Excel/CSV file upload and import voters using pandas.
-        PINs are NOT generated during import — use the 'Regenerate PINs & Print Voter Slips' action after import.
-        """
+        """Handle Excel/CSV file upload and import voters using pandas."""
         if request.method == 'POST':
             form = ExcelImportForm(request.POST, request.FILES)
             if form.is_valid():
@@ -167,7 +157,6 @@ class VoterAdmin(admin.ModelAdmin):
                         summary += f", {updated_count} updated"
                     if skipped_count:
                         summary += f", {skipped_count} skipped"
-                    summary += ". Select all voters and use 'Regenerate PINs & Print Voter Slips' to assign PINs."
                     messages.success(request, summary)
                     return redirect('..')
 
@@ -232,61 +221,6 @@ class VoterAdmin(admin.ModelAdmin):
 
         return response
 
-    def export_voters(self, request, queryset):
-        """Export selected voters to Excel using pandas"""
-        # Prepare data
-        data = []
-        for voter in queryset:
-            has_voted = Vote.objects.filter(voter=voter).exists()
-            data.append({
-                'voter_no': voter.voter_no,
-                'full_name': voter.full_name,
-                'house': voter.house,
-                'has_voted': 'Yes' if has_voted else 'No'
-            })
-
-        df = pd.DataFrame(data)
-
-        # Create Excel file in memory
-        output = BytesIO()
-
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Voters Export')
-
-            # Access the workbook to style headers
-            workbook = writer.book
-            worksheet = writer.sheets['Voters Export']
-
-            # Style headers
-            from openpyxl.styles import Font, PatternFill
-            header_fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
-            header_font = Font(bold=True)
-
-            for cell in worksheet[1]:
-                cell.fill = header_fill
-                cell.font = header_font
-
-            # Adjust column widths
-            worksheet.column_dimensions['A'].width = 15
-            worksheet.column_dimensions['B'].width = 30
-            worksheet.column_dimensions['C'].width = 20
-            worksheet.column_dimensions['D'].width = 15
-
-        output.seek(0)
-
-        # Create response
-        response = HttpResponse(
-            output.read(),
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-        response['Content-Disposition'] = 'attachment; filename=voters_export.xlsx'
-
-        self.message_user(request, f"{len(data)} voters exported successfully")
-
-        return response
-
-    export_voters.short_description = "Export selected voters to Excel"
-
     def delete_all_voters(self, request, queryset):
         """Delete all voters (use with caution)"""
         count = queryset.count()
@@ -294,36 +228,6 @@ class VoterAdmin(admin.ModelAdmin):
         self.message_user(request, f"{count} voters deleted.", messages.WARNING)
 
     delete_all_voters.short_description = "Delete selected voters"
-
-    def regenerate_and_print_slips(self, request, queryset):
-        """Generate new PINs for selected voters, bulk-save hashes, then render print slips."""
-        voters = list(queryset.order_by('voter_no'))
-        slip_voters = []
-
-        # Generate plain PINs and hash them all upfront
-        for voter in voters:
-            pin_plain = str(random.randint(1000, 9999))
-            # pbkdf2_sha1 is ~10x faster than pbkdf2_sha256 and more than adequate
-            # for short-lived, supervised election PINs
-            voter.pin = make_password(pin_plain, hasher='pbkdf2_sha1')
-            slip_voters.append({
-                'voter_no': voter.voter_no,
-                'full_name': voter.full_name,
-                'house': voter.house,
-                'pin': pin_plain,
-            })
-
-        # Single bulk UPDATE instead of N individual saves
-        with transaction.atomic():
-            Voter.objects.bulk_update(voters, ['pin'])
-
-        context = {
-            'voters': slip_voters,
-            'title': 'Voter PIN Slips',
-        }
-        return render(request, 'admin/voters/print_slips.html', context)
-
-    regenerate_and_print_slips.short_description = "Regenerate PINs & Print Voter Slips"
 
 
 @admin.register(Vote)
