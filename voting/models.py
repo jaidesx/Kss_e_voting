@@ -17,6 +17,7 @@ class Voter(models.Model):
     voter_no = models.CharField(max_length=50, unique=True)
     full_name = models.CharField(max_length=100)
     house = models.CharField(max_length=50, choices=HOUSE_CHOICES)
+    pin = models.CharField(max_length=6, blank=True, null=True)
 
     @property
     def is_authenticated(self):

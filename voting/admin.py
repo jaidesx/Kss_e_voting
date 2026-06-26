@@ -12,22 +12,140 @@ from .forms import ExcelImportForm
 
 @admin.register(Voter)
 class VoterAdmin(admin.ModelAdmin):
-    list_display = ['voter_no', 'full_name', 'house']
+    list_display = ['voter_no', 'full_name', 'house', 'pin_generated']
     list_filter = ['house']
     search_fields = ['voter_no', 'full_name', 'house']
     list_per_page = 50
+    fields = ['voter_no', 'full_name', 'house', 'pin_status']
+    readonly_fields = ['pin_status']
 
-    actions = ['delete_all_voters']
+    actions = ['delete_all_voters', 'generate_and_export_selected_pins']
 
     change_list_template = "admin/voters/voter_changelist.html"
+
+    @admin.display(boolean=True, description='PIN Generated')
+    def pin_generated(self, obj):
+        return bool(obj.pin)
+
+    @admin.display(description='PIN Status')
+    def pin_status(self, obj):
+        if obj and obj.pin:
+            return "Generated"
+        return "Not Generated"
+
+    @admin.action(description="Generate & Export PINs (Overwrite)")
+    def generate_and_export_selected_pins(self, request, queryset):
+        import random
+        import string
+        from io import BytesIO
+        import pandas as pd
+        from django.http import HttpResponse
+
+        with transaction.atomic():
+            voters = list(queryset)
+            for voter in voters:
+                voter.pin = "".join(random.choices(string.digits, k=6))
+            Voter.objects.bulk_update(voters, ['pin'])
+
+        data = {
+            'voter_no': [v.voter_no for v in voters],
+            'full_name': [v.full_name for v in voters],
+            'house': [v.house for v in voters],
+            'pin': [v.pin for v in voters]
+        }
+        df = pd.DataFrame(data)
+
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Selected Voter PINs')
+
+            workbook = writer.book
+            worksheet = writer.sheets['Selected Voter PINs']
+            from openpyxl.styles import Font, PatternFill
+            header_fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
+            header_font = Font(bold=True)
+
+            for cell in worksheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+
+            worksheet.column_dimensions['A'].width = 15
+            worksheet.column_dimensions['B'].width = 30
+            worksheet.column_dimensions['C'].width = 20
+            worksheet.column_dimensions['D'].width = 15
+
+        output.seek(0)
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=selected_voter_pins.xlsx'
+        return response
 
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path('import-excel/', self.admin_site.admin_view(self.import_excel), name='voters_voter_import_excel'),
             path('download-template/', self.admin_site.admin_view(self.download_template), name='voters_voter_download_template'),
+            path('export-voter-pins/', self.admin_site.admin_view(self.export_voter_pins), name='voters_voter_export_pins'),
         ]
         return custom_urls + urls
+
+    def export_voter_pins(self, request):
+        """Generate PINs for voters missing them, and export all voters with PINs to Excel."""
+        import random
+        import string
+        from io import BytesIO
+        import pandas as pd
+        from django.http import HttpResponse
+        from django.db.models import Q
+
+        # Generate PINs for voters missing them
+        missing_voters = Voter.objects.filter(Q(pin__isnull=True) | Q(pin=""))
+        if missing_voters.exists():
+            with transaction.atomic():
+                voters_list = list(missing_voters)
+                for voter in voters_list:
+                    voter.pin = "".join(random.choices(string.digits, k=6))
+                Voter.objects.bulk_update(voters_list, ['pin'])
+
+        # Export ALL voters
+        all_voters = Voter.objects.all().order_by('full_name')
+
+        data = {
+            'voter_no': [v.voter_no for v in all_voters],
+            'full_name': [v.full_name for v in all_voters],
+            'house': [v.house for v in all_voters],
+            'pin': [v.pin for v in all_voters]
+        }
+        df = pd.DataFrame(data)
+
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Voter PINs')
+
+            workbook = writer.book
+            worksheet = writer.sheets['Voter PINs']
+            from openpyxl.styles import Font, PatternFill
+            header_fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
+            header_font = Font(bold=True)
+
+            for cell in worksheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+
+            worksheet.column_dimensions['A'].width = 15
+            worksheet.column_dimensions['B'].width = 30
+            worksheet.column_dimensions['C'].width = 20
+            worksheet.column_dimensions['D'].width = 15
+
+        output.seek(0)
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=voter_pins.xlsx'
+        return response
 
     def import_excel(self, request):
         """Handle Excel/CSV file upload and import voters using pandas."""

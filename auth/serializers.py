@@ -7,15 +7,23 @@ from .models import Viewer
 
 class VoterLoginSerializer(serializers.Serializer):
     voter_no = serializers.CharField(max_length=50)
+    pin = serializers.CharField(max_length=6)
 
     def validate(self, data):
         voter_no = data.get('voter_no', '').strip()
+        pin = data.get('pin', '').strip()
 
         try:
             from voting.models import Voter
             voter = Voter.objects.get(voter_no=voter_no)
         except Voter.DoesNotExist:
             raise serializers.ValidationError("Invalid voter number.")
+
+        if not voter.pin:
+            raise serializers.ValidationError("A PIN has not been generated for this voter. Please contact the administrator.")
+
+        if voter.pin != pin:
+            raise serializers.ValidationError("Invalid PIN.")
 
         data['voter'] = voter
         return data
