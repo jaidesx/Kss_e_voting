@@ -27,13 +27,20 @@ class Command(BaseCommand):
         overwrite = options['overwrite']
         output_path = options['output']
 
+        total_voters = Voter.objects.count()
+        if total_voters == 0:
+            self.stdout.write(self.style.ERROR('Error: No voters found in the database. Please import voters first.'))
+            return
+
+        self.stdout.write(f'Total voters found in database: {total_voters}')
+
         # Determine which voters need PINs
         if overwrite:
             voters_to_update = Voter.objects.all()
             self.stdout.write('Generating/overwriting PINs for ALL voters...')
         else:
             voters_to_update = Voter.objects.filter(Q(pin__isnull=True) | Q(pin=''))
-            self.stdout.write('Generating PINs for voters without a PIN...')
+            self.stdout.write('Checking for voters without a PIN...')
 
         count = voters_to_update.count()
         if count > 0:
@@ -45,7 +52,7 @@ class Command(BaseCommand):
                 Voter.objects.bulk_update(voters_list, ['pin'])
             self.stdout.write(self.style.SUCCESS(f'Successfully generated PINs for {count} voters.'))
         else:
-            self.stdout.write(self.style.WARNING('No voters needed new PINs.'))
+            self.stdout.write(self.style.SUCCESS('All voters already have a PIN assigned. No new PINs generated.'))
 
         # Now export ALL voters to Excel using values() to prevent model instantiation and minimize memory usage
         voters_data = Voter.objects.values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
