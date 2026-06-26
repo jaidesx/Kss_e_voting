@@ -76,11 +76,14 @@ class Command(BaseCommand):
 
                 workbook = writer.book
                 worksheet = writer.sheets['Voter PINs']
-                from openpyxl.styles import Font, PatternFill
+                from openpyxl.styles import Font, PatternFill, Alignment
 
-                # Write generation time at the top
-                worksheet.cell(row=1, column=1, value=f"Generated on: {generation_time}")
-                worksheet.cell(row=1, column=1).font = Font(italic=True, size=10)
+                # Write generation time at the top and merge across columns A to D
+                worksheet.merge_cells('A1:D1')
+                title_cell = worksheet['A1']
+                title_cell.value = f"Generated on: {generation_time}"
+                title_cell.font = Font(italic=True, size=10, color="555555")
+                title_cell.alignment = Alignment(horizontal='center', vertical='center')
 
                 header_fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
                 header_font = Font(bold=True)
