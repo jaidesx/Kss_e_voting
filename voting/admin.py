@@ -52,6 +52,12 @@ class VoterAdmin(admin.ModelAdmin):
         voters_data = Voter.objects.filter(id__in=selected_ids).values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
         df = pd.DataFrame(list(voters_data))
         df = df[['voter_no', 'full_name', 'house', 'pin']]
+        df = df.rename(columns={
+            'voter_no': 'Voter Number',
+            'full_name': 'Full Name',
+            'house': 'House',
+            'pin': 'PIN'
+        })
 
         from django.utils import timezone
         generation_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -122,6 +128,12 @@ class VoterAdmin(admin.ModelAdmin):
         voters_data = Voter.objects.values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
         df = pd.DataFrame(list(voters_data))
         df = df[['voter_no', 'full_name', 'house', 'pin']]
+        df = df.rename(columns={
+            'voter_no': 'Voter Number',
+            'full_name': 'Full Name',
+            'house': 'House',
+            'pin': 'PIN'
+        })
 
         from django.utils import timezone
         generation_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
