@@ -61,16 +61,24 @@ class Command(BaseCommand):
         df = df[['voter_no', 'full_name', 'house', 'pin']]
 
         try:
+            from django.utils import timezone
+            generation_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+
             with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-                df.to_excel(writer, index=False, sheet_name='Voter PINs')
+                df.to_excel(writer, index=False, startrow=2, sheet_name='Voter PINs')
 
                 workbook = writer.book
                 worksheet = writer.sheets['Voter PINs']
                 from openpyxl.styles import Font, PatternFill
+
+                # Write generation time at the top
+                worksheet.cell(row=1, column=1, value=f"Generated on: {generation_time}")
+                worksheet.cell(row=1, column=1).font = Font(italic=True, size=10)
+
                 header_fill = PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid")
                 header_font = Font(bold=True)
 
-                for cell in worksheet[1]:
+                for cell in worksheet[3]:
                     cell.fill = header_fill
                     cell.font = header_font
 
