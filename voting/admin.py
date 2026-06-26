@@ -47,13 +47,11 @@ class VoterAdmin(admin.ModelAdmin):
                 voter.pin = "".join(random.choices(string.digits, k=6))
             Voter.objects.bulk_update(voters, ['pin'])
 
-        data = {
-            'voter_no': [v.voter_no for v in voters],
-            'full_name': [v.full_name for v in voters],
-            'house': [v.house for v in voters],
-            'pin': [v.pin for v in voters]
-        }
-        df = pd.DataFrame(data)
+        # Optimize dataframe construction to prevent instantiating/looping model instances
+        selected_ids = [v.id for v in voters]
+        voters_data = Voter.objects.filter(id__in=selected_ids).values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
+        df = pd.DataFrame(list(voters_data))
+        df = df[['voter_no', 'full_name', 'house', 'pin']]
 
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -109,16 +107,10 @@ class VoterAdmin(admin.ModelAdmin):
                     voter.pin = "".join(random.choices(string.digits, k=6))
                 Voter.objects.bulk_update(voters_list, ['pin'])
 
-        # Export ALL voters
-        all_voters = Voter.objects.all().order_by('full_name')
-
-        data = {
-            'voter_no': [v.voter_no for v in all_voters],
-            'full_name': [v.full_name for v in all_voters],
-            'house': [v.house for v in all_voters],
-            'pin': [v.pin for v in all_voters]
-        }
-        df = pd.DataFrame(data)
+        # Export ALL voters using values() to prevent model instantiation and minimize memory usage
+        voters_data = Voter.objects.values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
+        df = pd.DataFrame(list(voters_data))
+        df = df[['voter_no', 'full_name', 'house', 'pin']]
 
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:

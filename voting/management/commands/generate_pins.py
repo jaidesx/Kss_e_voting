@@ -47,21 +47,18 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING('No voters needed new PINs.'))
 
-        # Now export ALL voters to Excel
-        all_voters = Voter.objects.all().order_by('full_name')
-        if not all_voters.exists():
+        # Now export ALL voters to Excel using values() to prevent model instantiation and minimize memory usage
+        voters_data = Voter.objects.values('voter_no', 'full_name', 'house', 'pin').order_by('full_name')
+        if not voters_data.exists():
             self.stdout.write(self.style.WARNING('No voters found in database to export.'))
             return
 
         self.stdout.write(f'Exporting all voters to {output_path}...')
 
-        data = {
-            'voter_no': [v.voter_no for v in all_voters],
-            'full_name': [v.full_name for v in all_voters],
-            'house': [v.house for v in all_voters],
-            'pin': [v.pin for v in all_voters]
-        }
-        df = pd.DataFrame(data)
+        # Construct DataFrame directly from the list of dictionaries
+        df = pd.DataFrame(list(voters_data))
+        # Ensure column order matches expectation
+        df = df[['voter_no', 'full_name', 'house', 'pin']]
 
         try:
             with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
