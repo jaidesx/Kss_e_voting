@@ -57,6 +57,19 @@ def generate_results_excel(elections):
     align_left = Alignment(horizontal="left", vertical="center")
     align_right = Alignment(horizontal="right", vertical="center")
 
+    def style_range(ws, start_row, start_col, end_row, end_col, font=None, fill=None, alignment=None, border=None):
+        for r in range(start_row, end_row + 1):
+            for c in range(start_col, end_col + 1):
+                cell = ws.cell(row=r, column=c)
+                if font:
+                    cell.font = font
+                if fill:
+                    cell.fill = fill
+                if alignment:
+                    cell.alignment = alignment
+                if border:
+                    cell.border = border
+
     for election in elections:
         # Clean title for sheet name (max 31 chars, openpyxl rules)
         clean_title = "".join(c for c in election.title if c.isalnum() or c in " -_")[:30].strip()
@@ -73,17 +86,12 @@ def generate_results_excel(elections):
         ws.merge_cells('A1:G1')
         ws.merge_cells('A2:G2')
 
-        c1 = ws['A1']
-        c1.value = "KSS STUDENT BALLOT ELECTION RESULTS"
-        c1.font = font_title
-        c1.fill = fill_title
-        c1.alignment = align_center
+        # Style all cells in the title merged ranges
+        style_range(ws, 1, 1, 1, 7, font=font_title, fill=fill_title, alignment=align_center)
+        style_range(ws, 2, 1, 2, 7, font=font_subtitle, fill=fill_subtitle, alignment=align_center)
 
-        c2 = ws['A2']
-        c2.value = f"Election: {election.title} {'(Demo)' if election.is_demo else ''}"
-        c2.font = font_subtitle
-        c2.fill = fill_subtitle
-        c2.alignment = align_center
+        ws['A1'].value = "KSS STUDENT BALLOT ELECTION RESULTS"
+        ws['A2'].value = f"Election: {election.title} {'(Demo)' if election.is_demo else ''}"
 
         # 2. Statistics Summary Cards
         total_voters = Voter.objects.count()
@@ -104,18 +112,14 @@ def generate_results_excel(elections):
         ws.merge_cells('D4:G4')
         ws.merge_cells('D5:G5')
 
-        for col_letter, label in stats_headers:
-            cell = ws[f"{col_letter}4"]
-            cell.value = label
-            cell.font = font_stats_lbl
-            cell.fill = fill_stats
-            cell.alignment = align_center
-            cell.border = thin_border
+        # Style the headers range
+        style_range(ws, 4, 1, 4, 3, font=font_stats_lbl, fill=fill_stats, alignment=align_center, border=thin_border)
+        style_range(ws, 4, 4, 4, 7, font=font_stats_lbl, fill=fill_stats, alignment=align_center, border=thin_border)
 
-        # Border styling for merged stats cells (E4, F4, G4 need borders too for openpyxl rendering)
-        for col_letter in ["E", "F", "G"]:
-            ws[f"{col_letter}4"].border = thin_border
-            ws[f"{col_letter}5"].border = thin_border
+        ws["A4"] = "Total Registered Voters"
+        ws["B4"] = "Total Votes Cast"
+        ws["C4"] = "Voter Turnout %"
+        ws["D4"] = "Export Date & Time"
 
         ws["A5"] = total_voters
         ws["A5"].number_format = '#,##0'
@@ -124,12 +128,8 @@ def generate_results_excel(elections):
         ws["C5"] = f"{turnout_pct:.2f}%"
         ws["D5"] = generation_time
 
-        for col_letter in ["A", "B", "C", "D"]:
-            cell = ws[f"{col_letter}5"]
-            cell.font = font_stats_val
-            cell.fill = fill_stats
-            cell.alignment = align_center
-            cell.border = thin_border
+        style_range(ws, 5, 1, 5, 3, font=font_stats_val, fill=fill_stats, alignment=align_center, border=thin_border)
+        style_range(ws, 5, 4, 5, 7, font=font_stats_val, fill=fill_stats, alignment=align_center, border=thin_border)
 
         # 3. Position Results Section
         current_row = 7
@@ -164,12 +164,15 @@ def generate_results_excel(elections):
             # Render Position Title Bar
             ws.row_dimensions[current_row].height = 24
             ws.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=7)
-            sec_cell = ws.cell(row=current_row, column=1)
-            sec_cell.value = f"Position: {post.title} (Required Selections: {post.required_selections})"
-            sec_cell.font = font_section
-            sec_cell.fill = fill_section
-            sec_cell.alignment = align_left
-            sec_cell.border = Border(bottom=Side(border_style="medium", color="1F4E78"))
+            style_range(
+                ws,
+                current_row, 1, current_row, 7,
+                font=font_section,
+                fill=fill_section,
+                alignment=align_left,
+                border=Border(bottom=Side(border_style="medium", color="1F4E78"))
+            )
+            ws.cell(row=current_row, column=1).value = f"Position: {post.title} (Required Selections: {post.required_selections})"
 
             current_row += 1
 
@@ -190,11 +193,14 @@ def generate_results_excel(elections):
             if not candidate_results:
                 ws.row_dimensions[current_row].height = 18
                 ws.merge_cells(start_row=current_row, start_column=1, end_row=current_row, end_column=7)
-                no_cand = ws.cell(row=current_row, column=1)
-                no_cand.value = "No candidates registered for this position."
-                no_cand.font = Font(italic=True, color="7F7F7F")
-                no_cand.alignment = align_center
-                no_cand.border = thin_border
+                style_range(
+                    ws,
+                    current_row, 1, current_row, 7,
+                    font=Font(italic=True, color="7F7F7F"),
+                    alignment=align_center,
+                    border=thin_border
+                )
+                ws.cell(row=current_row, column=1).value = "No candidates registered for this position."
                 current_row += 1
             else:
                 for idx, res in enumerate(candidate_results):
